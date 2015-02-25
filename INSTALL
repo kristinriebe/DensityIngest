@@ -1,0 +1,18 @@
+Installation
+------------
+
+This code only works, if the DBIngestor is already installed!
+(Download it from https://github.com/adrpar/DBIngestor.)
+
+To compile, define DBINGESTOR_LIBRARY_PATH and DBINGESTOR_INCLUDE_PATH to
+represent the installation directory of the DBIngestor library, e.g. like this:
+
+mkdir build
+cd build
+cmake -DDBINGESTOR_LIBRARY_PATH:PATH=/usr/local/DBIngestor/lib -DDBINGESTOR_INCLUDE_PATH:PATH=/usr/local/DBIngestor/include ..
+make
+
+
+Then you can call "DensityIngest" with command line parameters as given in the code.
+See the README for an example.
+
