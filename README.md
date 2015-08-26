@@ -8,7 +8,7 @@ It assumes that these catalogues come in the Fortran binary format used by
 Anatoly Klypin. Adjust the routines in the reader, if you have a different 
 format.
 
-For any questions, please contact me at
+For any questions, please contact me:  
 Kristin Riebe, kriebe@aip.de
 
 
@@ -34,17 +34,18 @@ Features
 (see DensitySchemaMapper.cpp). Convert them to overdensities beforehand.
 * Determine spatial grid indizes ix, iy, iz.
 
-* Columns written to the database:
+* Columns written to the database:  
 
-    webId	unique id for database entry, = snapnum* (some factor of 10) + i	
-    ix		spatial grid index, ranging from 0 to 255
-    iy
-    iz
-    phkey 	Peano-Hilbert key for the grid cell in which the particle is located, 
-		is just filled with nulls. Values can be updated via the database 
-        	server using e.g. libhilbert (https://github.com/adrpar/libhilbert)
-    dens	overdensity
-    snapnum 	snapshot number
+    `webId`	unique id for database entry, = snapnum* (some factor of 10) + i  	
+    `ix`		spatial grid indizes, ranging from 0 to 255  
+    `iy`  
+    `iz`  
+    `phkey` 	Peano-Hilbert key for the grid cell in which the particle is 
+            located, is just filled with nulls. Values can be updated via the 
+            database server using e.g. libhilbert 
+            (https://github.com/adrpar/libhilbert)  
+    `dens`	overdensity  
+    `snapnum` 	snapshot number  
 
 * If swap=1 is given, values will be byteswapped
 * The reader reads complete records to accelerate ingestion. Please take care that 
@@ -67,22 +68,22 @@ DensityIngest/build/FofIngest.x -s mysql -D TestDB -T Density -U myusername -P m
 ```
 
 Replace myusername and mypassword with your own credentials. 
--s: type of database (e.g. mysql, unix_sqlsrv_odbc)
--D: database name
--T: table name
--H: host
--O: port
--d: data file 
--M: snapshot number (snapnum)
--r: record length
--g: grid cells for ix,iy,iz, per dimension
--e: sum of densities (sum of total number of particles)
+`-s`: type of database (e.g. mysql, unix_sqlsrv_odbc)  
+`-D`: database name  
+`-T`: table name  
+`-H`: host  
+`-O`: port  
+`-d`: data file  
+`-M`: snapshot number (snapnum)  
+`-r`: record length  
+`-g`: grid cells for ix,iy,iz, per dimension  
+`-e`: sum of densities (sum of total number of particles)  
 
-NOTE: One can also use -R 1. This would try to resume the connection, 
+NOTE: One can also use `-R 1`. This would try to resume the connection, 
 if something fails. But then be careful and check later on if all rows were 
-ingested and contain meaningful values. Erroneous rows must be deleted manually. 
+ingested and contain meaningful values. Erroneous rows must be deleted manually.  
 
 NOTE: The example data file contains the density field at redshift z=0 for the Bolshoi simulation, 
 created by Anatoly Klypin. Also 
 see the [CosmoSim database](http://www.cosmosim.org/), for which this code was used to ingest
-density fields. 
+density fields.  
