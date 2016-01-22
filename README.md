@@ -36,15 +36,15 @@ Features
 
 * Columns written to the database:  
 
-Database column |  Type   | Description
-:---------------|:--------|:------------
-webId	        | bigint  | unique id for database entry, = snapnum* (some factor of 10) + i 
-ix		        | int     | spatial grid indizes, ranging from 0 to 255  
-iy              | int     |
-iz              | int     |
-phkey           | int     |	Peano-Hilbert key for the grid cell in which the  particle is located, is just filled with nulls. Values can be updated via the database server using e.g. [libhilbert](https://github.com/adrpar/libhilbert)  
-dens            | float   |	overdensity  
-snapnum         | int     | snapshot number  
+    Database column |  Type   | Description
+    :---------------|:--------|:------------
+    webId	        | bigint  | unique id for database entry, = snapnum* (some factor of 10) + i 
+    ix		        | int     | spatial grid indizes, ranging from 0 to 255  
+    iy              | int     |
+    iz              | int     |
+    phkey           | int     |	Peano-Hilbert key for the grid cell in which the  particle is located, is just filled with nulls. Values can be updated via the database server using e.g. [libhilbert](https://github.com/adrpar/libhilbert)  
+    dens            | float   |	overdensity  
+    snapnum         | int     | snapshot number  
 
 * If swap=1 is given, values will be byteswapped
 * The reader reads complete records to accelerate ingestion. Please take care
