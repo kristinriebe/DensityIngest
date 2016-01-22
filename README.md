@@ -19,7 +19,7 @@ with 4-byte-reals. The record length is Ngrid^2, where Ngrid is the
 number of grid cells per dimension. Each record is wrapped with a 
 leading and trailing 4-byte integer. 
 
-They data files only contains density values, sorted row by row. 
+The data files only contain density values, sorted row by row.
 Spatial grid indizes are derived from the position in the array in
 DensityReader::getNextRow().
 
@@ -35,21 +35,22 @@ Features
 * Determine spatial grid indizes ix, iy, iz.
 
 * Columns written to the database:  
-
-    `webId`	unique id for database entry, = snapnum* (some factor of 10) + i  	
-    `ix`		spatial grid indizes, ranging from 0 to 255  
-    `iy`  
-    `iz`  
-    `phkey` 	Peano-Hilbert key for the grid cell in which the particle is 
-            located, is just filled with nulls. Values can be updated via the 
-            database server using e.g. libhilbert 
-            (https://github.com/adrpar/libhilbert)  
-    `dens`	overdensity  
-    `snapnum` 	snapshot number  
+Database column |  Type   | Description
+:---------------|:--------|:------------
+webId	        | bigint  | unique id for database entry, = snapnum* (some factor of 10) + i 
+ix		        | int     | spatial grid indizes, ranging from 0 to 255  
+iy              | int     |
+iz              | int     |
+phkey           | int     |	Peano-Hilbert key for the grid cell in which the 
+                            particle is located, is just filled with nulls. Values can be updated via the database server 
+                            using e.g. libhilbert 
+                            (https://github.com/adrpar/libhilbert)  
+dens            | float   |	overdensity  
+snapnum         | int     | snapshot number  
 
 * If swap=1 is given, values will be byteswapped
-* The reader reads complete records to accelerate ingestion. Please take care that 
-your machine has enough memory to fit Ngrid^2 floats into memory!
+* The reader reads complete records to accelerate ingestion. Please take care
+  that your machine has enough memory to fit Ngrid^2 floats into memory!
 
 
 Installation
@@ -67,7 +68,9 @@ Data can be ingested with a command line like this:
 DensityIngest/build/FofIngest.x -s mysql -D TestDB -T Density -U myusername -P mypassword -H 127.0.0.1 -O 3306 -r 65536 -g 256 -M 426 -e 8589934592 -w 1 -d Density-0256-0416.dat
 ```
 
-Replace myusername and mypassword with your own credentials. 
+Replace *myusername* and *mypassword* with your own credentials.  
+
+The possible options are:  
 `-s`: type of database (e.g. mysql, unix_sqlsrv_odbc)  
 `-D`: database name  
 `-T`: table name  
@@ -83,7 +86,7 @@ NOTE: One can also use `-R 1`. This would try to resume the connection,
 if something fails. But then be careful and check later on if all rows were 
 ingested and contain meaningful values. Erroneous rows must be deleted manually.  
 
-NOTE: The example data file contains the density field at redshift z=0 for the Bolshoi simulation, 
-created by Anatoly Klypin. Also 
-see the [CosmoSim database](http://www.cosmosim.org/), for which this code was used to ingest
-density fields.  
+NOTE: The example data file contains the density field at redshift z=0 for the
+Bolshoi simulation, created by Anatoly Klypin. Also see the
+[CosmoSim database](http://www.cosmosim.org/), for which this code was used to
+ingest density fields.  

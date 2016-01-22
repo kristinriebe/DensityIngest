@@ -1,7 +1,6 @@
 /*  
- *  Copyright (c) 2015, Kristin Riebe <kriebe@aip.de>, 
- *                      Adrian M. Partl <apartl@aip.de>
- *                      eScience team AIP Potsdam
+ *  Copyright (c) 2016, Kristin Riebe <kriebe@aip.de>,
+ *                      E-Science team AIP Potsdam
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,13 +17,7 @@
  *  limitations under the License.
  */
 
-/* Try a Density-binary-reader, 
- * shamelessly copied together from helloWorld-example and AsciiIngest
- */
-
-/* New features: 
- * - allow to skip first rows and start somewhere in between, using startRow and maxRows
- *   => can patch missing halos in the database!!! :-)
+/* Try a Density-binary-reader, based on HelloWorld-example from DBIngestor
  */
 
 #include <iostream>
