@@ -35,6 +35,7 @@ Features
 * Determine spatial grid indizes ix, iy, iz.
 
 * Columns written to the database:  
+
 Database column |  Type   | Description
 :---------------|:--------|:------------
 webId	        | bigint  | unique id for database entry, = snapnum* (some factor of 10) + i 
