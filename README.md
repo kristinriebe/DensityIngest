@@ -42,10 +42,7 @@ webId	        | bigint  | unique id for database entry, = snapnum* (some factor 
 ix		        | int     | spatial grid indizes, ranging from 0 to 255  
 iy              | int     |
 iz              | int     |
-phkey           | int     |	Peano-Hilbert key for the grid cell in which the 
-                            particle is located, is just filled with nulls. Values can be updated via the database server 
-                            using e.g. libhilbert 
-                            (https://github.com/adrpar/libhilbert)  
+phkey           | int     |	Peano-Hilbert key for the grid cell in which the  particle is located, is just filled with nulls. Values can be updated via the database server using e.g. [libhilbert](https://github.com/adrpar/libhilbert)  
 dens            | float   |	overdensity  
 snapnum         | int     | snapshot number  
 
