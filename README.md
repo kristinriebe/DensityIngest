@@ -1,7 +1,8 @@
 DensityIngest
 =============
 
-This code uses the DBIngestor library (https://github.com/adrpar/DBIngestor) 
+This code uses the DBIngestor library
+(https://github.com/aipescience/DBIngestor) 
 to ingest binary density fields into a database.
 
 It assumes that these catalogues come in the Fortran binary format used by 
@@ -42,7 +43,7 @@ Features
     ix		        | int     | spatial grid indizes, ranging from 0 to 255  
     iy              | int     |
     iz              | int     |
-    phkey           | int     |	Peano-Hilbert key for the grid cell in which the  particle is located, is just filled with nulls. Values can be updated via the database server using e.g. [libhilbert](https://github.com/adrpar/libhilbert)  
+    phkey           | int     |	Peano-Hilbert key for the grid cell in which the  particle is located, is just filled with nulls. Values can be updated via the database server using e.g. [libhilbert](https://github.com/aipescience/libhilbert)  
     dens            | float   |	overdensity  
     snapnum         | int     | snapshot number  
 
