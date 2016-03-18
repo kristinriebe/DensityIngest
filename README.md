@@ -64,7 +64,7 @@ Example directory.
 Data can be ingested with a command line like this:
 
 ```
-DensityIngest/build/FofIngest.x -s mysql -D TestDB -T Density -U myusername -P mypassword -H 127.0.0.1 -O 3306 -r 65536 -g 256 -M 426 -e 8589934592 -w 1 -d Density-0256-0416.dat
+DensityIngest/build/DensityIngest.x -s mysql -D TestDB -T Density -U myusername -P mypassword -H 127.0.0.1 -O 3306 -r 65536 -g 256 -M 426 -e 8589934592 -w 1 -d Density-0256-0416.dat
 ```
 
 Replace *myusername* and *mypassword* with your own credentials.  

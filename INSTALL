@@ -2,7 +2,7 @@ Installation
 ------------
 
 This code only works, if the DBIngestor is already installed!
-(Download it from https://github.com/adrpar/DBIngestor.)
+(Download it from https://github.com/aipescience/DBIngestor.)
 
 To compile, define DBINGESTOR_LIBRARY_PATH and DBINGESTOR_INCLUDE_PATH to
 represent the installation directory of the DBIngestor library, e.g. like this:

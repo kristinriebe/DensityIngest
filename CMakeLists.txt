@@ -62,13 +62,16 @@ if(ODBC_FOUND AND ODBC_BUILD_IFFOUND)
 	add_definitions(-DDB_ODBC)
 endif()
 
-# KR: turn on all warnings
+# Turn on all warnings
 add_definitions (-Wall -g)
-
 
 add_executable (DensityIngest.x ${FILES_SRC})
 
-target_link_libraries(DensityIngest.x ${Boost_PROGRAM_OPTIONS_LIBRARY} DBIngestor)
+# For some reason, linking program_options directly here does NOT work 
+# correctly on geras, thus use the more general "${Boost_LIBRARIES}" 
+# variable. This seems to be more robust.
+# target_link_libraries(DensityIngest.x ${Boost_PROGRAM_OPTIONS_LIBRARY} DBIngestor)
+target_link_libraries(DensityIngest.x ${Boost_LIBRARIES} DBIngestor)
 
 if(SQLITE3_FOUND)
         target_link_libraries(DensityIngest.x ${SQLITE3_LIBRARIES})
