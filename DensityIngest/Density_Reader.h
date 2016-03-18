@@ -81,26 +81,33 @@ namespace Density {
         int snapnum;   // snapshot number
         long sumdens;    // sum of all densities; needed for scaling to overdensity, usually = tot. num. of particles
 
+        int fileFormat; // for different density file formats, 0 = Anatoly (counts in cell only, no header), 1 = Noam (cloud in cell, overdensities, with header)
+
 
           
     public:
         DensityReader();
-        DensityReader(std::string newFileName, int swap, int nrecord, int ngrid, long sumdens, int snapnum);
+        DensityReader(std::string newFileName, int swap, int nrecord, int ngrid, long sumdens, int snapnum, int newFileFormat);
         ~DensityReader();
 
         void openFile(std::string newFileName);
 
         void closeFile();
 
+        int readHeader(int ngrid);
+
         int readNextBlock();
         
         int getNextRow();
         
         int assignInt(int *n, char *memblock, int bswap);
+        int assignLong(long *n, char *memblock, int bswap);
         int assignFloat(float *n, char *memblock, int bswap);   
         int swapInt(int i, int bswap);
         float swapFloat(float f, int bswap);
         
+        float overdensity(float dens, float densfactor);
+
         bool getItemInRow(DBDataSchema::DataObjDesc * thisItem, bool applyAsserters, bool applyConverters, void* result);
 
         bool getDataItem(DBDataSchema::DataObjDesc * thisItem, void* result);

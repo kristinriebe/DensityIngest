@@ -162,6 +162,9 @@ namespace Density {
         col7Obj->setIsHeaderItem(false);
         
         //then describe the SchemaItem which represents the data on the server side
+        
+        // Skip snapnum, if it is for only one snapshot number
+        /*
         SchemaItem * schemaItem7 = new SchemaItem();
         schemaItem7->setColumnName("snapnum");
         schemaItem7->setColumnDBType(DBT_INTEGER);
@@ -169,7 +172,7 @@ namespace Density {
         
         //add schema item to the schema
         returnSchema->addItemToSchema(schemaItem7);
-       
+        */
 
         
         return returnSchema;

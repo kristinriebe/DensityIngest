@@ -43,6 +43,7 @@ int main (int argc, const char * argv[])
     int ngrid;
     long sumdens;
     int snapnum;
+    int fileFormat;
     
     string dbase;
     string table;
@@ -111,6 +112,7 @@ int main (int argc, const char * argv[])
 //                ("maxRows,m", po::value<int32_t>(&maxRows)->default_value(-1), "max. number of rows to be read (default -1 for all rows)")
                 ("swap,w", po::value<int32_t>(&bswap)->default_value(0), "flag for byte swapping (default 0)")
                 ("resumeMode,R", po::value<bool>(&resumeMode)->default_value(0), "try to resume ingest on failed connection (turns off transactions)? [default: 0]")
+                ("fileFormat,f", po::value<int32_t>(&fileFormat)->default_value(1), "density file format, if 1: densities are overdensities and file contains header; if 0: no header and only counts in cells are given [default: 1]")
                 ;
 
     po::positional_options_description posDesc;
@@ -156,7 +158,7 @@ int main (int argc, const char * argv[])
     thisSchema = thisSchemaMapper->generateSchema(dbase, table);
     
     //now setup the file reader
-     DensityReader * thisReader = new DensityReader(dataFile, bswap, nrecord, ngrid, sumdens, snapnum);
+    DensityReader * thisReader = new DensityReader(dataFile, bswap, nrecord, ngrid, sumdens, snapnum, fileFormat);
     
     dbServer = adaptorFac.getDBAdaptors(system);
     

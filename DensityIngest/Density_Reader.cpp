@@ -33,7 +33,7 @@ namespace Density {
         //currRow = -1;
     }
     
-    DensityReader::DensityReader(std::string newFileName, int newSwap, int newNrecord, int newNgrid, long newSumdens, int newSnapnum) {          
+    DensityReader::DensityReader(std::string newFileName, int newSwap, int newNrecord, int newNgrid, long newSumdens, int newSnapnum, int newFileFormat) {          
         
         long ncells;
         int exponent;
@@ -43,16 +43,24 @@ namespace Density {
         ngrid = newNgrid;
         nrecord = newNrecord;
         sumdens = newSumdens;
+        fileFormat = newFileFormat;
 
-        // Determine factor to scale down densities to real overdensity, 
-        // rho_ov = rho/rho_back - 1.
-        // Densities given in file are only particles per cell, 
-        // i.e. rho = dN/dV, with dV = 1, 
-        // and sum(dN/dV) = sum(dN) = sumdens (for Bolshoi: 2048^3)
-        // Thus, rho_ov = (dN/dV) / (N/V) - 1 = dens / (sumdens/ngrid^3)
 
-        densfactor =  ROUND( pow( pow(sumdens,0.3333333)/ngrid, 3) );
-        printf("Scaling factor for densities: %d\n", densfactor);
+        if (fileFormat == 0) {
+            // File format as delivered by Anatoly Klypin
+            // 
+            // Determine factor to scale down densities to real overdensity, 
+            // rho_ov = rho/rho_back - 1.
+            // Densities given in file are only particles per cell, 
+            // i.e. rho = dN/dV, with dV = 1, 
+            // and sum(dN/dV) = sum(dN) = sumdens (for Bolshoi: 2048^3)
+            // Thus, rho_ov = (dN/dV) / (N/V) - 1 = dens / (sumdens/ngrid^3)
+
+            densfactor =  ROUND( pow( pow(sumdens,0.3333333)/ngrid, 3) );
+            printf("Scaling factor for densities: %d\n", densfactor);
+        } else {
+            densfactor = 1; // actually not used so far ...
+        }
 
         ncells =  pow(ngrid,3);
         exponent = (int) ( log10(ncells)+1 );
@@ -74,6 +82,11 @@ namespace Density {
 
         openFile(newFileName);
 
+        if (fileFormat == 1) {
+            // File format by Noam, 
+            // a header is given and should be read
+            readHeader(ngrid);
+        }
 
     }
     
@@ -95,27 +108,76 @@ namespace Density {
         }
         
         fileName = newFileName;
+
     }
     
     void DensityReader::closeFile() {
         if (fileStream.is_open())
             fileStream.close();
     }
+   
+    int DensityReader::readHeader(int ngrid_user) {
+        if (!(fileStream.is_open())) {
+            DensityIngest_error("DensityReader: File is not open!\n");
+        }
+        int numHeaderBytes;
+        int iskip, skipsize;
+        long ntot;
+        float boxsize;
+        float mass_particle;
+        int ngrid_file;
 
+        skipsize = 4;
+        numHeaderBytes = 1*4 + 1*8 + 1*4 + 1*4  +  4*2*skipsize;
+
+        char memchunk[numHeaderBytes];
+
+
+        if (!fileStream.read(memchunk,numHeaderBytes)) {
+            printf("End of file reached.\n");
+            return false;
+        }
+        assignInt(&iskip, &memchunk[0], bswap);
+        assignInt(&ngrid_file, &memchunk[4], bswap);
+        assignInt(&iskip, &memchunk[8], bswap);
+
+        assignInt(&iskip, &memchunk[12], bswap);
+        assignLong(&ntot, &memchunk[16], bswap);
+        assignInt(&iskip, &memchunk[24], bswap);
+
+        assignInt(&iskip, &memchunk[28], bswap);
+        assignFloat(&boxsize, &memchunk[32], bswap);
+        assignInt(&iskip, &memchunk[36], bswap);
+
+        assignInt(&iskip, &memchunk[40], bswap);
+        assignFloat(&mass_particle, &memchunk[44], bswap);
+        assignInt(&iskip, &memchunk[48], bswap);
+
+        printf("Header values: ngrid_file: %d ntot: %ld boxsize: %f particle mass: %f\n",
+            ngrid_file, ntot, boxsize, mass_particle);
+
+        if (ngrid_user != ngrid_file) {
+            fprintf(stderr,"DensityReader: Number of grid cells from user input (%d) does not match value in file (%d)!\n",
+                ngrid_user, ngrid_file);
+            exit(0);
+        }
+
+        return ngrid_file;
+    }
 
     int DensityReader::readNextBlock() {
         // read complete block into density array
         assert(fileStream.is_open());
 
         int skipsize, iskip; 
-        int datasize;
+        //int datasize;
         char memchunk[numBytesPerRow];
 
         skipsize = 4;
-        datasize = 4;
+        //datasize = 4;
         
-        // need to skip integer that starts 
-        // the next data block 
+        // need to skip integer that starts
+        // the next data block
         if (!fileStream.read(memchunk,skipsize)) {
             printf("End of file reached.\n");
             return false;
@@ -141,16 +203,20 @@ namespace Density {
     }
     
     int DensityReader::getNextRow() {
-        // read one line, from alread read memchunk-block
+        // read one line, from already read memchunk-block
 
         assert(fileStream.is_open());
 
         int rem;
         
- 
+        if (counter == ngrid*ngrid*ngrid) {
+            // We have read all the densities already, so we are done.
+            printf("End of density part is reached.\n");
+            return false;
+        }
+
         if (countInBlock == nrecord || counter == 0) {
             // end of data block/start of new one is reached!
-
             if (!readNextBlock()) return false;
 
 
@@ -162,8 +228,9 @@ namespace Density {
         // and assign it to the proper variables
         assignFloat(&dens, &datablock[countInBlock*numBytesPerRow], bswap);
         
-        // convert to real overdensities
-        dens = dens / densfactor - 1;
+        // convert to real overdensities, if these were only counts in cells,
+        // otherwise use dens as is
+        // dens = overdensity(dens, densfactor);
 
 
         iz = floor(counter/(ngrid*ngrid));
@@ -182,6 +249,11 @@ namespace Density {
         return true;       
     }
     
+    float  DensityReader::overdensity(float dens, float densfactor) {
+        // determine overdensity based on counts of particles in cells
+        dens = dens / densfactor - 1;
+        return dens;
+    }
 
     
     bool DensityReader::getItemInRow(DBDataSchema::DataObjDesc * thisItem, bool applyAsserters, bool applyConverters, void* result) {
@@ -272,6 +344,41 @@ namespace Density {
             tmp     = cptr[1];
             cptr[1] = cptr[2];
             cptr[2] = tmp;
+        }
+
+        return 1;
+    }
+
+
+    // write part from memoryblock to long; byteswap, if necessary (TODO: use global 'swap' or locally submit?)
+    int DensityReader::assignLong(long *n, char *memblock, int bswap) {
+        
+        unsigned char *cptr,tmp;
+
+        if (sizeof(long) != 8) {
+            fprintf(stderr,"assignLong: sizeof(long)=%ld and not 8. Can't handle that.\n",sizeof(long));
+            return 0;
+        }
+
+        if (!memcpy(n,  memblock, sizeof(long))) {
+            fprintf(stderr,"Error: Encountered end of memory block or other trouble when reading the memory block.\n");
+            return 0;
+        }
+
+        if (bswap) {
+            cptr = (unsigned char *)n;
+            tmp     = cptr[0];
+            cptr[0] = cptr[7];
+            cptr[7] = tmp;
+            tmp     = cptr[1];
+            cptr[1] = cptr[6];
+            cptr[6] = tmp;
+            tmp     = cptr[2];
+            cptr[2] = cptr[5];
+            cptr[5] = tmp;
+            tmp     = cptr[3];
+            cptr[3] = cptr[4];
+            cptr[4] = tmp;
         }
 
         return 1;
